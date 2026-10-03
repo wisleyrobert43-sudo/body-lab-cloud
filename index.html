@@ -106,9 +106,12 @@ body{background:
 
 /* Premium login */
 .cloudAuth{
+  position:fixed!important;inset:0!important;z-index:99999!important;
+  width:100vw!important;height:100dvh!important;min-height:100vh!important;
   background:#050607!important;padding:0!important;display:grid!important;place-items:stretch!important;
-  overflow:auto
+  overflow:auto!important;overscroll-behavior:contain
 }
+body.authLocked{overflow:hidden!important}
 .cloudAuth.hidden{display:none!important}
 .authShell{min-height:100vh;display:grid;grid-template-columns:minmax(360px,1.05fr) minmax(420px,.95fr)}
 .authVisual{position:relative;min-height:100vh;overflow:hidden;background:#050607}

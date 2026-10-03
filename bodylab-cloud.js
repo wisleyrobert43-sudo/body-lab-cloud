@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const CLOUD_VERSION = 'bodylab-cloud-20261003-2';
+  const CLOUD_VERSION = 'bodylab-cloud-20261003-3';
   const state = {
     config: null,
     session: null,
@@ -148,16 +148,13 @@
   function addStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      .cloudAuth{position:fixed;inset:0;background:radial-gradient(circle at 70% 0,#39270f 0,#070604 44%);z-index:9999;display:grid;place-items:center;padding:18px}
-      .cloudAuth.hidden{display:none}.authBox{width:min(480px,100%);background:linear-gradient(145deg,#151009,#090704);border:1px solid #80602b;border-radius:22px;padding:26px;box-shadow:0 30px 100px #000b}
-      .authLogo{font-size:28px;font-weight:950;margin-bottom:4px}.authLogo b{color:#e7c16d}.authTabs{display:flex;gap:8px;margin:18px 0}.authTabs button{flex:1;border:1px solid #705526;background:#0b0805;color:#d8c9ad;padding:10px;border-radius:10px;cursor:pointer}.authTabs button.on{background:#e7c16d;color:#160e03}
-      .cloudUser{margin-top:18px;padding-top:14px;border-top:1px solid #4d391b;font-size:12px;color:#b9ad98}.cloudUser b{color:#fffaf0;display:block;margin-bottom:5px}.cloudUser button{margin-top:8px;width:100%}
-      .cloudSetup{border:1px solid #9e7331;background:#20160a;padding:12px;border-radius:12px;color:#f2d99b;font-size:13px;margin-top:14px}
-      .cloudBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}.studentBadge{border:1px solid #a77d32;border-radius:12px;padding:9px 12px;background:#100c07;color:#e7c16d;font-weight:800}
-      .cloudTableWrap{overflow:auto}.cloudActions{display:flex;gap:7px;flex-wrap:wrap}.smallBtn{border:1px solid #80602b;background:#151009;color:#fffaf0;border-radius:8px;padding:7px 9px;cursor:pointer}.smallBtn.primary{background:#e7c16d;color:#160e03}
-      .cloudEmpty{padding:26px;text-align:center;color:#b9ad98;border:1px dashed #705526;border-radius:14px}.historyItem{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #3f3018}.historyItem:last-child{border-bottom:0}
-      .strengthGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.strengthCard{border:1px solid #6f5424;background:#0d0905;border-radius:14px;padding:14px}.strengthSide{padding:10px 0;border-top:1px solid #352713}.attempts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.attempts input{width:100%;background:#090704;border:1px solid #705526;color:white;border-radius:9px;padding:9px}.strengthResult{margin-top:16px}.barRow{display:grid;grid-template-columns:minmax(145px,1.5fr) 90px 1fr 80px;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #352713}.barTrack{height:12px;background:#21170b;border-radius:99px;overflow:hidden}.barFill{height:100%;background:#e7c16d;border-radius:99px}.barFill.alt{opacity:.58}.statusNormal{color:#8de8a9}.statusObserve{color:#f2d99b}.statusIntervene{color:#ff8585}.cloudSave{margin-left:auto}
-      .cloudSelect{background:#090704;border:1px solid #705526;color:white;border-radius:10px;padding:10px;min-width:230px}
+      .cloudUser{margin-top:auto;padding-top:14px;border-top:1px solid #242a30;font-size:12px;color:#8f979d}.cloudUser b{color:#f7f7f4;display:block;margin-bottom:5px}.cloudUser button{margin-top:8px;width:100%}
+      .cloudSetup{border:1px solid #705526;background:#17130a;padding:10px;border-radius:10px;color:#f2d99b;font-size:11px;margin-top:12px}
+      .cloudBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}.studentBadge{border:1px solid #4d3b16;border-radius:12px;padding:9px 12px;background:#111007;color:#f6d77d;font-weight:800}
+      .cloudTableWrap{overflow:auto}.cloudActions{display:flex;gap:7px;flex-wrap:wrap}.smallBtn{border:1px solid #303941;background:#111519;color:#f7f7f4;border-radius:8px;padding:7px 9px;cursor:pointer}.smallBtn.primary{background:#f0b429;color:#160e03;border-color:#f0b429}
+      .cloudEmpty{padding:26px;text-align:center;color:#8f979d;border:1px dashed #303941;border-radius:14px}.historyItem{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #242a30}.historyItem:last-child{border-bottom:0}
+      .strengthGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.strengthCard{border:1px solid #242a30;background:#0d1012;border-radius:14px;padding:14px}.strengthSide{padding:10px 0;border-top:1px solid #242a30}.attempts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.attempts input{width:100%;background:#090b0d;border:1px solid #303941;color:white;border-radius:9px;padding:9px}.strengthResult{margin-top:16px}.barRow{display:grid;grid-template-columns:minmax(145px,1.5fr) 90px 1fr 80px;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #242a30}.barTrack{height:12px;background:#161b1f;border-radius:99px;overflow:hidden}.barFill{height:100%;background:#f0b429;border-radius:99px}.barFill.alt{opacity:.58}.statusNormal{color:#71d895}.statusObserve{color:#f2d99b}.statusIntervene{color:#ff8585}.cloudSave{margin-left:auto}
+      .cloudSelect{background:#090b0d;border:1px solid #303941;color:white;border-radius:10px;padding:10px;min-width:230px}
       @media(max-width:900px){.strengthGrid{grid-template-columns:1fr}.historyItem{grid-template-columns:1fr}.barRow{grid-template-columns:1fr 70px}.barTrack{grid-column:1/-1}.cloudSave{margin-left:0}}
     `;
     document.head.append(style);
@@ -168,47 +165,71 @@
     overlay.id = 'cloudAuth';
     overlay.className = 'cloudAuth';
     overlay.innerHTML = `
-      <div class="authBox">
-        <div class="authLogo">BODY<b>LAB</b></div>
-        <div class="muted">Acesse seus alunos, avaliações e histórico.</div>
-        <div id="cloudConfigWarning" class="cloudSetup" style="display:none"></div>
-        <div class="authTabs"><button id="loginTab" class="on">ENTRAR</button><button id="signupTab">CRIAR CONTA</button></div>
-        <div class="field" id="signupNameField" style="display:none"><label>Nome profissional</label><input id="authName" autocomplete="name" placeholder="Seu nome"></div>
-        <div class="field"><label>E-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="voce@email.com"></div>
-        <div class="field"><label>Senha</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Sua senha"></div>
-        <button id="authSubmit" class="btn" style="width:100%;margin-top:14px">ENTRAR</button>
-        <div id="authStatus" class="muted" style="margin-top:12px;min-height:20px"></div>
+      <div class="authShell">
+        <section class="authVisual" aria-hidden="true">
+          <div class="authBrand">
+            <div class="authBrandLogo">BODY <span>LAB</span></div>
+            <div class="authBrandSub">Avaliação física, evolução e performance em um só lugar.</div>
+          </div>
+          <div class="authValueList">
+            <div class="authValue">Avaliação precisa</div>
+            <div class="authValue">Evolução real</div>
+            <div class="authValue">Desempenho com propósito</div>
+          </div>
+          <div class="authStats">
+            <div class="authStat"><b>Dados</b>organizados por aluno</div>
+            <div class="authStat"><b>Histórico</b>comparação de evolução</div>
+            <div class="authStat"><b>Performance</b>decisões com contexto</div>
+          </div>
+        </section>
+        <section class="authFormPanel">
+          <div class="authBox">
+            <div class="authLogo">ACESSO PROFISSIONAL • <b>BODY LAB</b></div>
+            <div class="authWelcome">Bem-vindo de volta</div>
+            <div class="authLead">Acesse sua conta para acompanhar alunos, avaliações, fotos e evolução em um só lugar.</div>
+            <div id="cloudConfigWarning" class="cloudSetup" style="display:none"></div>
+            <div class="field"><label>E-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com"></div>
+            <div class="field"><label>Senha</label><div class="authPasswordWrap"><input id="authPassword" type="password" autocomplete="current-password" placeholder="Sua senha"><button type="button" class="authEye" id="authTogglePassword" aria-label="Mostrar senha">◉</button></div></div>
+            <div class="authMeta">
+              <label class="authCheck"><input id="authRemember" type="checkbox" checked> Manter conectado</label>
+              <button type="button" class="authForgot" id="authForgot">Esqueci minha senha</button>
+            </div>
+            <button id="authSubmit" class="btn authSubmitPremium">ENTRAR NO BODY LAB →</button>
+            <div id="authStatus" class="muted"></div>
+            <div class="authTrust">Ambiente protegido para profissionais.</div>
+          </div>
+        </section>
       </div>`;
     document.body.append(overlay);
-    let mode='login';
-    const setMode = next => {
-      mode=next;
-      q('#loginTab').classList.toggle('on',mode==='login');
-      q('#signupTab').classList.toggle('on',mode==='signup');
-      q('#signupNameField').style.display=mode==='signup'?'flex':'none';
-      q('#authSubmit').textContent=mode==='login'?'ENTRAR':'CRIAR CONTA';
-      q('#authPassword').autocomplete=mode==='login'?'current-password':'new-password';
+
+    q('#authTogglePassword').onclick=()=>{
+      const input=q('#authPassword');
+      input.type=input.type==='password'?'text':'password';
+      q('#authTogglePassword').textContent=input.type==='password'?'◉':'◎';
     };
-    q('#loginTab').onclick=()=>setMode('login');
-    q('#signupTab').onclick=()=>setMode('signup');
+    q('#authForgot').onclick=async()=>{
+      const email=q('#authEmail').value.trim();
+      if(!email){q('#authStatus').textContent='Informe seu e-mail para recuperar o acesso.';return;}
+      q('#authForgot').disabled=true;
+      q('#authStatus').textContent='Enviando recuperação de senha...';
+      try{
+        await authRequest('recover',{method:'POST',body:JSON.stringify({email})});
+        q('#authStatus').textContent='Se o e-mail estiver cadastrado, você receberá as instruções de recuperação.';
+      }catch(error){
+        q('#authStatus').textContent=`Não foi possível solicitar a recuperação: ${error.message}`;
+      }finally{q('#authForgot').disabled=false;}
+    };
     q('#authSubmit').onclick=async()=>{
       const email=q('#authEmail').value.trim();
       const password=q('#authPassword').value;
-      const name=q('#authName').value.trim();
       if(!email || password.length<6) return q('#authStatus').textContent='Informe e-mail e uma senha com pelo menos 6 caracteres.';
       q('#authSubmit').disabled=true;
-      q('#authStatus').textContent=mode==='login'?'Entrando...':'Criando conta...';
+      q('#authStatus').textContent='Entrando...';
       try{
-        if(mode==='login'){
-          const session=await authRequest('token?grant_type=password',{method:'POST',body:JSON.stringify({email,password})});
-          saveSession(session);state.user=session.user || await authRequest('user',{method:'GET'});
-          await afterLogin();
-        } else {
-          const data=await authRequest('signup',{method:'POST',body:JSON.stringify({email,password,data:{full_name:name||undefined}})});
-          if(data.access_token){saveSession(data);state.user=data.user;await afterLogin();}
-          else q('#authStatus').textContent='Conta criada. Se a confirmação por e-mail estiver ativa, confirme o e-mail e depois entre.';
-        }
-      }catch(error){q('#authStatus').textContent=`Não foi possível continuar: ${error.message}`;}
+        const session=await authRequest('token?grant_type=password',{method:'POST',body:JSON.stringify({email,password})});
+        saveSession(session);state.user=session.user || await authRequest('user',{method:'GET'});
+        await afterLogin();
+      }catch(error){q('#authStatus').textContent=`Não foi possível entrar: ${error.message}`;}
       finally{q('#authSubmit').disabled=false;}
     };
     q('#authPassword').addEventListener('keydown',e=>{if(e.key==='Enter')q('#authSubmit').click();});
@@ -282,6 +303,7 @@
   function syncSelectedStudent() {
     const student=currentStudent();
     q('#cloudSelectedStudent').textContent=student ? `Aluno: ${student.full_name}` : 'Nenhum aluno selecionado';
+    if(q('#dashActiveStudent'))q('#dashActiveStudent').textContent=student ? `Aluno ativo: ${student.full_name}` : 'Nenhum aluno selecionado';
     ['historyStudentSelect','strengthStudentSelect'].forEach(id=>{
       const el=q('#'+id); if(el && state.selectedStudentId) el.value=state.selectedStudentId;
     });
@@ -310,8 +332,10 @@
   async function loadProfessional() {
     const rows=await rest('professionals',{query:`select=id,full_name,email,phone&id=eq.${encodeURIComponent(state.user.id)}&limit=1`});
     state.professional=rows?.[0] || null;
-    q('#cloudProfessionalName').textContent=state.professional?.full_name || 'Profissional Body Lab';
+    const professionalName=state.professional?.full_name || 'Profissional';
+    q('#cloudProfessionalName').textContent=professionalName === 'Profissional' ? 'Profissional Body Lab' : professionalName;
     q('#cloudProfessionalEmail').textContent=state.professional?.email || state.user?.email || '';
+    if(q('#dashProfessionalName'))q('#dashProfessionalName').textContent=professionalName.split(' ')[0] || professionalName;
   }
 
   async function loadStudents() {
@@ -327,8 +351,8 @@
   async function loadDashboard() {
     try{
       const [students, assessments]=await Promise.all([
-        rest('students',{query:'select=id&active=eq.true'}),
-        rest('assessments',{query:'select=id,student_id,assessment_date&order=assessment_date.desc'})
+        rest('students',{query:'select=id,full_name,goal,active&active=eq.true&order=full_name.asc'}),
+        rest('assessments',{query:'select=id,student_id,assessment_date,status,objective,created_at&order=assessment_date.desc,created_at.desc'})
       ]);
       const uniqueStudents=new Set((assessments||[]).map(a=>a.student_id));
       const reassessments=Math.max(0,(assessments||[]).length-uniqueStudents.size);
@@ -336,6 +360,31 @@
       if(q('#dashAssessments'))q('#dashAssessments').textContent=assessments?.length||0;
       if(q('#dashReassessments'))q('#dashReassessments').textContent=reassessments;
       if(q('#dashProjections'))q('#dashProjections').textContent='—';
+      const now=new Date();
+      if(q('#dashGreetingLabel'))q('#dashGreetingLabel').textContent=now.getHours()<12?'Bom dia':now.getHours()<18?'Boa tarde':'Boa noite';
+      if(q('#dashDate'))q('#dashDate').textContent=now.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+
+      const byId=new Map((students||[]).map(s=>[s.id,s]));
+      const recent=(assessments||[]).slice(0,5);
+      const tbody=q('#dashRecentTbody'), empty=q('#dashRecentEmpty');
+      if(tbody){
+        tbody.innerHTML=recent.map(a=>{
+          const student=byId.get(a.student_id) || state.students.find(s=>s.id===a.student_id) || {};
+          const name=student.full_name || 'Aluno';
+          const initials=name.split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+          const type=a.objective || 'Avaliação física';
+          const date=new Date(a.assessment_date+'T12:00:00').toLocaleDateString('pt-BR');
+          const completed=(a.status||'completed').toLowerCase()==='completed';
+          return `<tr>
+            <td><div class="recentStudent"><span class="avatarMini">${esc(initials||'A')}</span><div><b>${esc(name)}</b><div class="muted">${esc(student.goal||'')}</div></div></div></td>
+            <td>${esc(type)}</td>
+            <td>${esc(date)}</td>
+            <td><span class="statusPill ${completed?'':'pending'}">${completed?'✓ Concluída':'◷ '+esc(a.status||'Pendente')}</span></td>
+            <td><button class="smallBtn" data-history-student="${esc(a.student_id)}">•••</button></td>
+          </tr>`;
+        }).join('');
+        if(empty)empty.style.display=recent.length?'none':'block';
+      }
     }catch(error){console.warn('Dashboard:',error.message);}
   }
 
@@ -577,6 +626,13 @@
     q('#cancelStudentBtn').onclick=()=>q('#studentFormCard').style.display='none';
     q('#saveStudentBtn').onclick=createStudent;
     q('#studentSearch').oninput=e=>renderStudents(e.target.value);
+    if(q('#dashSearch'))q('#dashSearch').addEventListener('keydown',e=>{
+      if(e.key==='Enter'){
+        const term=e.target.value.trim();
+        window.go('alunos');
+        if(q('#studentSearch')){q('#studentSearch').value=term;renderStudents(term);}
+      }
+    });
     q('#refreshHistoryBtn').onclick=()=>loadHistory(q('#historyStudentSelect').value);
     q('#historyStudentSelect').onchange=e=>loadHistory(e.target.value);
     q('#strengthStudentSelect').onchange=e=>{state.selectedStudentId=e.target.value;localStorage.setItem('bodylab_selected_student',e.target.value);syncSelectedStudent();};

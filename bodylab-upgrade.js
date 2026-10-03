@@ -208,7 +208,7 @@ async function generateFutureBody(){
   if(missing.length){toast(`Envie as três fotos. Faltam: ${missing.join(', ')}.`);return;}
   try{
     const health=await fetch('/api/health',{cache:'no-store'}).then(r=>r.json());
-    if(health.version!=='bodylab-cloud-20261003-1'){toast('Abra o Future Body pela versão nova do INICIAR.bat.');return;}
+    if(health.version!=='bodylab-cloud-20261003-3'){toast('Abra o Future Body pela versão nova do INICIAR.bat.');return;}
     if(!health.aiConfigured){toast('Configure sua chave OpenRouter no arquivo .env.');return;}
   }catch{toast('Servidor não conectado. Abra o INICIAR.bat da pasta atualizada.');return;}
   button.disabled=true;clearFutureResult();status.textContent='A IA está editando as três fotos. Isso pode levar alguns minutos.';

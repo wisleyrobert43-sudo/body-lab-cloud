@@ -1,7 +1,10 @@
 BODY LAB CLOUD - AVALIACAO FISICA, HISTORICO E RELATORIOS
-VERSAO: bodylab-cloud-20261003-2
+VERSAO: bodylab-cloud-20261003-3
 
 O QUE ENTROU NESTA VERSAO
+- Visual premium V5.2 aprovado: nova tela de login dark luxury e novo dashboard profissional.
+- Login sem cadastro publico, com recuperar senha, mostrar/ocultar senha e visual responsivo.
+- Dashboard com saudacao dinamica, busca de aluno, aluno ativo, cards reais, atalhos e avaliacoes recentes.
 - Login e cadastro de profissionais usando Supabase Auth.
 - Banco de alunos por profissional, protegido pelas regras RLS criadas no Supabase.
 - Selecao de aluno e historico de avaliacoes por data.

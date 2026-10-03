@@ -8,7 +8,7 @@ const DEFAULT_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_uRnRWC9Ut3TK0Z6fJri-XA_
 const app = express();
 app.use(express.json({ limit: '45mb' }));
 app.use((req,res,next)=>{
-  const allowed=['/','/index.html','/bodylab-upgrade.js','/bodylab-cloud.js','/pdf-lib.min.js','/api/health','/api/config'];
+  const allowed=['/','/index.html','/bodylab-upgrade.js','/bodylab-cloud.js','/pdf-lib.min.js','/login-hero.webp','/api/health','/api/config'];
   if(req.method==='GET' && !allowed.includes(decodeURIComponent(req.path))) return res.status(404).end();
   next();
 });
@@ -24,14 +24,14 @@ function extractText(data){
 app.get('/api/health',(req,res)=>{
   const supabaseUrl=String(process.env.SUPABASE_URL||DEFAULT_SUPABASE_URL).trim();
   const supabaseKey=String(process.env.SUPABASE_PUBLISHABLE_KEY||process.env.SUPABASE_ANON_KEY||DEFAULT_SUPABASE_PUBLISHABLE_KEY).trim();
-  res.json({ok:true,version:'bodylab-cloud-20261003-2',model:process.env.OPENROUTER_MODEL||'google/gemini-2.5-flash',imageModel:process.env.OPENROUTER_IMAGE_MODEL||'google/gemini-3.1-flash-image',aiConfigured:Boolean(process.env.OPENROUTER_API_KEY && !process.env.OPENROUTER_API_KEY.includes('COLE_')),supabaseConfigured:Boolean(supabaseUrl&&supabaseKey)});
+  res.json({ok:true,version:'bodylab-cloud-20261003-3',model:process.env.OPENROUTER_MODEL||'google/gemini-2.5-flash',imageModel:process.env.OPENROUTER_IMAGE_MODEL||'google/gemini-3.1-flash-image',aiConfigured:Boolean(process.env.OPENROUTER_API_KEY && !process.env.OPENROUTER_API_KEY.includes('COLE_')),supabaseConfigured:Boolean(supabaseUrl&&supabaseKey)});
 });
 
 app.get('/api/config',(req,res)=>{
   const supabaseUrl=String(process.env.SUPABASE_URL||DEFAULT_SUPABASE_URL).trim();
   const supabaseKey=String(process.env.SUPABASE_PUBLISHABLE_KEY||process.env.SUPABASE_ANON_KEY||DEFAULT_SUPABASE_PUBLISHABLE_KEY).trim();
   res.set('Cache-Control','no-store');
-  res.json({supabaseUrl,supabaseKey,supabaseConfigured:Boolean(supabaseUrl&&supabaseKey&&!supabaseKey.includes('COLE_')),version:'bodylab-cloud-20261003-2'});
+  res.json({supabaseUrl,supabaseKey,supabaseConfigured:Boolean(supabaseUrl&&supabaseKey&&!supabaseKey.includes('COLE_')),version:'bodylab-cloud-20261003-3'});
 });
 
 app.post('/api/analyze', async (req,res)=>{

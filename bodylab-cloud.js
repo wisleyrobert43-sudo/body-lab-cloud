@@ -201,6 +201,7 @@
         </section>
       </div>`;
     document.body.append(overlay);
+    document.body.classList.add('authLocked');
 
     q('#authTogglePassword').onclick=()=>{
       const input=q('#authPassword');
@@ -620,7 +621,9 @@
   function wireEvents() {
     q('#logoutBtn').onclick=async()=>{
       try{await authRequest('logout',{method:'POST',body:'{}'});}catch{}
-      clearSession();q('#cloudAuth').classList.remove('hidden');
+      clearSession();
+      q('#cloudAuth').classList.remove('hidden');
+      document.body.classList.add('authLocked');
     };
     q('#newStudentBtn').onclick=()=>q('#studentFormCard').style.display='block';
     q('#cancelStudentBtn').onclick=()=>q('#studentFormCard').style.display='none';
@@ -652,6 +655,7 @@
 
   async function afterLogin() {
     q('#cloudAuth').classList.add('hidden');
+    document.body.classList.remove('authLocked');
     await Promise.all([loadProfessional(),loadStudents(),loadStrengthCatalog()]);
     await loadDashboard();
     if(state.selectedStudentId)await loadHistory(state.selectedStudentId);

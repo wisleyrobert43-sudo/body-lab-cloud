@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const CLOUD_VERSION = 'bodylab-cloud-20261003-3';
+  const CLOUD_VERSION = 'bodylab-cloud-20261003-4';
   const state = {
     config: null,
     session: null,
@@ -155,7 +155,12 @@
       .cloudEmpty{padding:26px;text-align:center;color:#8f979d;border:1px dashed #303941;border-radius:14px}.historyItem{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #242a30}.historyItem:last-child{border-bottom:0}
       .strengthGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.strengthCard{border:1px solid #242a30;background:#0d1012;border-radius:14px;padding:14px}.strengthSide{padding:10px 0;border-top:1px solid #242a30}.attempts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.attempts input{width:100%;background:#090b0d;border:1px solid #303941;color:white;border-radius:9px;padding:9px}.strengthResult{margin-top:16px}.barRow{display:grid;grid-template-columns:minmax(145px,1.5fr) 90px 1fr 80px;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #242a30}.barTrack{height:12px;background:#161b1f;border-radius:99px;overflow:hidden}.barFill{height:100%;background:#f0b429;border-radius:99px}.barFill.alt{opacity:.58}.statusNormal{color:#71d895}.statusObserve{color:#f2d99b}.statusIntervene{color:#ff8585}.cloudSave{margin-left:auto}
       .cloudSelect{background:#090b0d;border:1px solid #303941;color:white;border-radius:10px;padding:10px;min-width:230px}
-      @media(max-width:900px){.strengthGrid{grid-template-columns:1fr}.historyItem{grid-template-columns:1fr}.barRow{grid-template-columns:1fr 70px}.barTrack{grid-column:1/-1}.cloudSave{margin-left:0}}
+      .vitalGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+      .vitalCard{background:linear-gradient(145deg,#12171a,#0a0d0f);border:1px solid #293138;border-radius:14px;padding:14px}
+      .vitalCard>span{display:block;color:#8f979d;font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:9px}
+      .vitalCard>div{display:flex;align-items:center;gap:8px}.vitalCard input{width:100%;min-width:0;background:#080a0c;border:0;border-bottom:1px solid #3a444b;color:#fff;font-size:24px;font-weight:850;padding:6px 2px;outline:none}
+      .vitalCard b{font-size:10px;color:#f0b429;white-space:nowrap}.vitalsTimeline{display:grid;gap:9px}.vitalsRow{display:grid;grid-template-columns:120px repeat(4,minmax(90px,1fr));gap:9px;align-items:center;padding:11px 12px;border:1px solid #242a30;border-radius:12px;background:#0b0e10}.vitalsRow small{color:#818a90}.vitalsRow strong{color:#f7f7f4}.vitalsNote{grid-column:1/-1;color:#8f979d;font-size:11px}
+      @media(max-width:900px){.strengthGrid,.vitalGrid{grid-template-columns:1fr}.historyItem,.vitalsRow{grid-template-columns:1fr}.barRow{grid-template-columns:1fr 70px}.barTrack{grid-column:1/-1}.cloudSave{margin-left:0}}
     `;
     document.head.append(style);
   }
@@ -241,11 +246,13 @@
     if(nav && !q('[data-s="alunos"]',nav)){
       const alunos=document.createElement('button');alunos.dataset.s='alunos';alunos.textContent='♟ Alunos';
       const força=document.createElement('button');força.dataset.s='forca';força.textContent='◫ Força e Assimetria';
+      const sinais=document.createElement('button');sinais.dataset.s='sinais';sinais.textContent='♡ Sinais Vitais';
       const historico=document.createElement('button');historico.dataset.s='historico';historico.textContent='◷ Histórico';
       nav.insertBefore(alunos, nav.children[1] || null);
       nav.insertBefore(historico, nav.children[2] || null);
-      nav.insertBefore(força, nav.children[4] || null);
-      [alunos,historico,força].forEach(b=>b.onclick=()=>window.go(b.dataset.s));
+      nav.insertBefore(sinais, nav.children[4] || null);
+      nav.insertBefore(força, nav.children[5] || null);
+      [alunos,historico,sinais,força].forEach(b=>b.onclick=()=>window.go(b.dataset.s));
     }
 
     const main=q('main.main');
@@ -260,7 +267,7 @@
 
         <section id="historico" class="screen">
           <div class="eyebrow">LINHA DO TEMPO</div><div class="h1">Histórico de avaliações</div>
-          <div class="cloudBar"><select id="historyStudentSelect" class="cloudSelect"></select><button class="btn secondary" id="refreshHistoryBtn">ATUALIZAR</button></div>
+          <div class="cloudBar"><select id="historyStudentSelect" class="cloudSelect"></select><button class="btn secondary" id="refreshHistoryBtn">ATUALIZAR</button><button class="btn secondary" id="downloadEvolutionHistoryBtn">BAIXAR PDF DE EVOLUÇÃO</button><button class="btn secondary" id="shareEvolutionHistoryBtn">COMPARTILHAR PDF</button></div>
           <div class="card"><div id="historyList" class="cloudEmpty">Selecione um aluno para visualizar o histórico.</div></div>
         </section>
 
@@ -271,6 +278,37 @@
           <div id="strengthTests" class="strengthGrid" style="margin-top:14px"></div>
           <div class="row" style="margin-top:16px"><button id="saveStrengthBtn" class="btn">SALVAR TESTE DE FORÇA</button><button id="loadStrengthBtn" class="btn secondary">CARREGAR DA DATA</button></div>
           <div id="strengthSummary" class="strengthResult"></div>
+        </section>
+
+        <section id="sinais" class="screen">
+          <div class="eyebrow">OXIMETRIA • PRESSÃO ARTERIAL</div><div class="h1">Sinais Vitais</div>
+          <p class="muted">Registre pressão arterial, saturação de oxigênio e frequência cardíaca dentro da mesma avaliação. Os dados ficam vinculados ao aluno e entram no relatório de evolução.</p>
+          <div class="card">
+            <div class="row">
+              <div class="field"><label>Aluno</label><select id="vitalsStudentSelect"></select></div>
+              <div class="field"><label>Data da avaliação</label><input id="vitalsDate" type="date"></div>
+              <div class="field"><label>Horário</label><input id="vitalsTime" type="time"></div>
+              <div class="field"><label>Momento da leitura</label><select id="vitalsContext"><option value="rest">Repouso</option><option value="pre_exercise">Pré-esforço</option><option value="post_exercise">Pós-esforço</option><option value="other">Outro</option></select></div>
+            </div>
+            <div class="vitalGrid">
+              <div class="vitalCard"><span>PRESSÃO SISTÓLICA</span><div><input id="vitalsSystolic" type="number" min="40" max="300" step="1" placeholder="120"><b>mmHg</b></div></div>
+              <div class="vitalCard"><span>PRESSÃO DIASTÓLICA</span><div><input id="vitalsDiastolic" type="number" min="20" max="200" step="1" placeholder="80"><b>mmHg</b></div></div>
+              <div class="vitalCard"><span>SATURAÇÃO SpO₂</span><div><input id="vitalsSpo2" type="number" min="50" max="100" step="0.1" placeholder="98"><b>%</b></div></div>
+              <div class="vitalCard"><span>FREQUÊNCIA CARDÍACA</span><div><input id="vitalsHeartRate" type="number" min="20" max="300" step="1" placeholder="72"><b>bpm</b></div></div>
+            </div>
+            <div class="field" style="margin-top:14px"><label>Observações da leitura</label><textarea id="vitalsNotes" rows="3" placeholder="Ex.: leitura em repouso após 5 minutos sentado."></textarea></div>
+            <div class="row" style="margin-top:16px">
+              <button id="saveVitalsBtn" class="btn">SALVAR SINAIS VITAIS</button>
+              <button id="loadVitalsBtn" class="btn secondary">CARREGAR DA DATA</button>
+              <button id="downloadEvolutionVitalsBtn" class="btn secondary">BAIXAR PDF DE EVOLUÇÃO</button>
+              <button id="shareEvolutionVitalsBtn" class="btn secondary">COMPARTILHAR PDF</button>
+            </div>
+            <div id="vitalsStatus" class="muted" style="margin-top:10px"></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <div class="top"><div><div class="eyebrow">HISTÓRICO</div><h3 style="margin:4px 0">Evolução dos sinais vitais</h3></div></div>
+            <div id="vitalsHistory" class="cloudEmpty">Selecione um aluno para visualizar as leituras anteriores.</div>
+          </div>
         </section>`);
     }
 
@@ -305,7 +343,7 @@
     const student=currentStudent();
     q('#cloudSelectedStudent').textContent=student ? `Aluno: ${student.full_name}` : 'Nenhum aluno selecionado';
     if(q('#dashActiveStudent'))q('#dashActiveStudent').textContent=student ? `Aluno ativo: ${student.full_name}` : 'Nenhum aluno selecionado';
-    ['historyStudentSelect','strengthStudentSelect'].forEach(id=>{
+    ['historyStudentSelect','strengthStudentSelect','vitalsStudentSelect'].forEach(id=>{
       const el=q('#'+id); if(el && state.selectedStudentId) el.value=state.selectedStudentId;
     });
     if(student){
@@ -317,7 +355,7 @@
 
   function renderStudentOptions() {
     const options = `<option value="">Selecione um aluno</option>` + state.students.map(s=>`<option value="${esc(s.id)}">${esc(s.full_name)}</option>`).join('');
-    ['historyStudentSelect','strengthStudentSelect'].forEach(id=>{const el=q('#'+id);if(el){el.innerHTML=options; if(state.selectedStudentId)el.value=state.selectedStudentId;}});
+    ['historyStudentSelect','strengthStudentSelect','vitalsStudentSelect'].forEach(id=>{const el=q('#'+id);if(el){el.innerHTML=options; if(state.selectedStudentId)el.value=state.selectedStudentId;}});
   }
 
   function renderStudents(filter='') {
@@ -591,6 +629,241 @@
     q('#strengthSummary').innerHTML=(asymHtml||'<div class="notice">Os testes unilaterais aparecem aqui quando houver lado direito e esquerdo preenchidos.</div>')+bilateralHtml;
   }
 
+
+  function vitalContextLabel(value){
+    return ({rest:'Repouso',pre_exercise:'Pré-esforço',post_exercise:'Pós-esforço',other:'Outro'})[value] || 'Não informado';
+  }
+
+  function vitalDateTime(date,time){
+    if(!date)return null;
+    const local=new Date(`${date}T${time||'12:00'}:00`);
+    return Number.isNaN(local.getTime())?null:local.toISOString();
+  }
+
+  function setSelectedStudentFromVitals(){
+    const studentId=q('#vitalsStudentSelect')?.value || state.selectedStudentId;
+    if(studentId){
+      state.selectedStudentId=studentId;
+      localStorage.setItem('bodylab_selected_student',studentId);
+      syncSelectedStudent();
+    }
+    return studentId;
+  }
+
+  async function saveVitals(){
+    const status=q('#vitalsStatus');
+    const studentId=setSelectedStudentFromVitals();
+    const date=q('#vitalsDate').value;
+    if(!studentId||!date)return cloudToast('Selecione o aluno e a data da avaliação.');
+    const systolic=numOrNull(q('#vitalsSystolic').value);
+    const diastolic=numOrNull(q('#vitalsDiastolic').value);
+    const spo2=numOrNull(q('#vitalsSpo2').value);
+    const heartRate=numOrNull(q('#vitalsHeartRate').value);
+    if([systolic,diastolic,spo2,heartRate].every(v=>v===null))return cloudToast('Preencha ao menos uma leitura.');
+    if((systolic===null)!==(diastolic===null))return cloudToast('Preencha os dois valores da pressão arterial.');
+    if(systolic!==null && (systolic<40||systolic>300))return cloudToast('Confira o valor da pressão sistólica.');
+    if(diastolic!==null && (diastolic<20||diastolic>200))return cloudToast('Confira o valor da pressão diastólica.');
+    if(spo2!==null && (spo2<50||spo2>100))return cloudToast('Confira o valor de SpO₂.');
+    if(heartRate!==null && (heartRate<20||heartRate>300))return cloudToast('Confira o valor da frequência cardíaca.');
+    q('#saveVitalsBtn').disabled=true;status.textContent='Salvando sinais vitais...';
+    try{
+      const assessment=await getOrCreateAssessment(studentId,date,currentStudent()?.goal||'');
+      await upsert('anthropometry',{
+        assessment_id:assessment.id,
+        systolic_bp:systolic,
+        diastolic_bp:diastolic,
+        spo2_percent:spo2,
+        heart_rate_bpm:heartRate,
+        vital_context:q('#vitalsContext').value||null,
+        measured_at:vitalDateTime(date,q('#vitalsTime').value),
+        observations:q('#vitalsNotes').value.trim()||null
+      });
+      status.textContent='✓ Sinais vitais salvos junto à avaliação.';
+      await Promise.all([loadVitalsHistory(studentId),loadHistory(studentId),loadDashboard()]);
+      cloudToast('Sinais vitais salvos no histórico.');
+    }catch(error){
+      status.textContent=`Erro: ${error.message}`;
+      if(/column|spo2_percent|heart_rate_bpm|vital_context|measured_at/i.test(error.message)) cloudToast('Antes de usar Sinais Vitais, execute a atualização SQL do Supabase.');
+    }finally{q('#saveVitalsBtn').disabled=false;}
+  }
+
+  async function loadVitalsForDate(){
+    const studentId=setSelectedStudentFromVitals(),date=q('#vitalsDate').value;
+    if(!studentId||!date)return cloudToast('Selecione o aluno e a data.');
+    q('#vitalsStatus').textContent='Carregando leitura...';
+    try{
+      const assessments=await rest('assessments',{query:`select=id&student_id=eq.${studentId}&assessment_date=eq.${date}&limit=1`});
+      if(!assessments?.[0]){
+        ['vitalsSystolic','vitalsDiastolic','vitalsSpo2','vitalsHeartRate','vitalsNotes','vitalsTime'].forEach(id=>{if(q('#'+id))q('#'+id).value='';});
+        q('#vitalsStatus').textContent='Nenhuma leitura salva nessa data.';return;
+      }
+      const rows=await rest('anthropometry',{query:`select=systolic_bp,diastolic_bp,spo2_percent,heart_rate_bpm,resting_heart_rate,vital_context,measured_at,observations&assessment_id=eq.${assessments[0].id}&limit=1`});
+      const row=rows?.[0];
+      if(!row){q('#vitalsStatus').textContent='Nenhuma leitura salva nessa data.';return;}
+      q('#vitalsSystolic').value=row.systolic_bp??'';
+      q('#vitalsDiastolic').value=row.diastolic_bp??'';
+      q('#vitalsSpo2').value=row.spo2_percent??'';
+      q('#vitalsHeartRate').value=row.heart_rate_bpm??row.resting_heart_rate??'';
+      q('#vitalsContext').value=row.vital_context||'rest';
+      q('#vitalsNotes').value=row.observations||'';
+      q('#vitalsTime').value=row.measured_at?new Date(row.measured_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',hour12:false}):'';
+      q('#vitalsStatus').textContent='✓ Leitura carregada.';
+    }catch(error){q('#vitalsStatus').textContent=`Erro: ${error.message}`;}
+  }
+
+  async function loadVitalsHistory(studentId=state.selectedStudentId){
+    const host=q('#vitalsHistory');if(!host)return;
+    if(!studentId){host.className='cloudEmpty';host.textContent='Selecione um aluno para visualizar as leituras anteriores.';return;}
+    host.className='';host.innerHTML='<div class="muted">Carregando sinais vitais...</div>';
+    try{
+      const assessments=await rest('assessments',{query:`select=id,assessment_date&student_id=eq.${studentId}&order=assessment_date.desc`});
+      if(!assessments.length){host.className='cloudEmpty';host.textContent='Este aluno ainda não possui avaliações.';return;}
+      const ids=assessments.map(a=>a.id);
+      const rows=await rest('anthropometry',{query:`select=assessment_id,systolic_bp,diastolic_bp,spo2_percent,heart_rate_bpm,resting_heart_rate,vital_context,measured_at,observations&assessment_id=in.(${ids.join(',')})`});
+      const map=new Map((rows||[]).map(r=>[r.assessment_id,r]));
+      const history=assessments.map(a=>({assessment:a,vital:map.get(a.id)})).filter(x=>{
+        const v=x.vital;return v && [v.systolic_bp,v.diastolic_bp,v.spo2_percent,v.heart_rate_bpm,v.resting_heart_rate].some(n=>n!=null);
+      });
+      if(!history.length){host.className='cloudEmpty';host.textContent='Nenhuma leitura de sinais vitais registrada ainda.';return;}
+      host.className='vitalsTimeline';
+      host.innerHTML=history.map(({assessment:a,vital:v})=>`<div class="vitalsRow">
+        <div><strong>${new Date(a.assessment_date+'T12:00:00').toLocaleDateString('pt-BR')}</strong><small style="display:block">${esc(vitalContextLabel(v.vital_context))}</small></div>
+        <div><small>Pressão</small><strong style="display:block">${v.systolic_bp!=null&&v.diastolic_bp!=null?`${v.systolic_bp}/${v.diastolic_bp} mmHg`:'—'}</strong></div>
+        <div><small>SpO₂</small><strong style="display:block">${v.spo2_percent!=null?`${Number(v.spo2_percent).toLocaleString('pt-BR',{maximumFractionDigits:1})}%`:'—'}</strong></div>
+        <div><small>FC</small><strong style="display:block">${v.heart_rate_bpm??v.resting_heart_rate??'—'}${v.heart_rate_bpm!=null||v.resting_heart_rate!=null?' bpm':''}</strong></div>
+        <div><small>Horário</small><strong style="display:block">${v.measured_at?new Date(v.measured_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'}</strong></div>
+        ${v.observations?`<div class="vitalsNote">${esc(v.observations)}</div>`:''}
+      </div>`).join('');
+    }catch(error){host.className='cloudEmpty';host.textContent=`Erro ao carregar sinais vitais: ${error.message}`;}
+  }
+
+  function reportFileName(student){
+    const clean=String(student?.full_name||'aluno').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase();
+    return `body-lab-evolucao-${clean||'aluno'}.pdf`;
+  }
+
+  function downloadBlobFile(blob,name){
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+
+  async function evolutionData(studentId){
+    const assessments=await rest('assessments',{query:`select=id,assessment_date,status,objective,general_notes&student_id=eq.${studentId}&order=assessment_date.asc`});
+    if(!assessments.length)throw new Error('Este aluno ainda não possui avaliações salvas.');
+    const ids=assessments.map(a=>a.id),filter=`assessment_id=in.(${ids.join(',')})`;
+    const [anth,comp,folds,navy,circs,strength]=await Promise.all([
+      rest('anthropometry',{query:`select=assessment_id,weight_kg,height_cm,bmi,systolic_bp,diastolic_bp,resting_heart_rate,heart_rate_bpm,spo2_percent,vital_context,measured_at,observations&${filter}`}),
+      rest('body_composition',{query:`select=assessment_id,method,body_fat_percentage,fat_mass_kg,lean_mass_kg,muscle_mass_kg&${filter}`}),
+      rest('skinfolds_7',{query:`select=assessment_id,sum_7_mm,body_fat_percentage,protocol&${filter}`}),
+      rest('navy_method',{query:`select=assessment_id,body_fat_percentage&${filter}`}),
+      rest('circumference_measurements',{query:`select=assessment_id,site,side,value_cm&${filter}&order=site.asc`}),
+      rest('strength_tests',{query:`select=assessment_id,test_name,side,best_result,average_result,unit&${filter}&order=test_name.asc`})
+    ]);
+    const one=(arr,id)=>arr.find(x=>x.assessment_id===id)||null,all=(arr,id)=>arr.filter(x=>x.assessment_id===id);
+    return assessments.map(a=>({assessment:a,anth:one(anth,a.id),comp:one(comp,a.id),fold:one(folds,a.id),navy:one(navy,a.id),circs:all(circs,a.id),strength:all(strength,a.id)}));
+  }
+
+  async function buildEvolutionPdfBlob(){
+    if(!window.PDFLib)throw new Error('Gerador de PDF não carregado.');
+    const studentId=q('#vitalsStudentSelect')?.value || q('#historyStudentSelect')?.value || state.selectedStudentId;
+    if(!studentId)throw new Error('Selecione um aluno.');
+    state.selectedStudentId=studentId;syncSelectedStudent();
+    const student=currentStudent()||state.students.find(s=>s.id===studentId);
+    const data=await evolutionData(studentId);
+    const {PDFDocument,StandardFonts,rgb}=window.PDFLib;
+    const pdf=await PDFDocument.create(),font=await pdf.embedFont(StandardFonts.Helvetica),bold=await pdf.embedFont(StandardFonts.HelveticaBold);
+    const safe=t=>String(t??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const gold=rgb(.94,.70,.16),white=rgb(.96,.96,.94),muted=rgb(.52,.56,.59),line=rgb(.16,.18,.20),bg=rgb(.035,.043,.05);
+    let page,y;
+    const addPage=(title='RELATORIO DE EVOLUCAO')=>{
+      page=pdf.addPage([595,842]);page.drawRectangle({x:0,y:0,width:595,height:842,color:bg});
+      page.drawText('BODY LAB',{x:38,y:798,size:18,font:bold,color:gold});
+      page.drawText(safe(title),{x:38,y:775,size:10,font:bold,color:white});
+      page.drawLine({start:{x:38,y:762},end:{x:557,y:762},thickness:1,color:line});y=738;
+      page.drawText('Registro de avaliacao fisica. Nao substitui diagnostico ou acompanhamento medico.',{x:38,y:24,size:7,font,color:muted});
+    };
+    const ensure=(need=30)=>{if(y<55+need)addPage('CONTINUACAO DO RELATORIO');};
+    const textLine=(text,size=10,isBold=false,color=white,indent=0)=>{
+      ensure(size+10);const value=safe(text);const max=88-Math.round(indent/5);
+      const words=value.split(/\s+/);let lineText='';
+      for(const word of words){
+        const test=(lineText+' '+word).trim();
+        if(test.length>max && lineText){page.drawText(lineText,{x:38+indent,y,size,font:isBold?bold:font,color});y-=size+5;ensure(size+10);lineText=word;}
+        else lineText=test;
+      }
+      if(lineText){page.drawText(lineText,{x:38+indent,y,size,font:isBold?bold:font,color});y-=size+5;}
+    };
+    const section=title=>{ensure(34);y-=4;page.drawText(safe(title).toUpperCase(),{x:38,y,size:9,font:bold,color:gold});y-=17;};
+    const fmt=n=>n==null?'—':Number(n).toLocaleString('pt-BR',{maximumFractionDigits:2});
+
+    addPage('RELATORIO COMPLETO DE EVOLUCAO');
+    textLine(`Aluno: ${student?.full_name||'Aluno'}`,15,true);
+    textLine(`Profissional: ${state.professional?.full_name||state.user?.email||'Body Lab'}`,10,false,muted);
+    textLine(`Avaliacoes registradas: ${data.length}`,10,false,muted);
+    textLine(`Emitido em: ${new Date().toLocaleString('pt-BR')}`,10,false,muted);
+    y-=10;section('Como ler este relatorio');
+    textLine('As medicoes abaixo foram registradas ao longo das avaliacoes do aluno. Use a sequencia cronologica para acompanhar mudancas de composicao corporal, medidas, forca e sinais vitais.',10,false,white);
+
+    for(const item of data){
+      addPage(`AVALIACAO • ${new Date(item.assessment.assessment_date+'T12:00:00').toLocaleDateString('pt-BR')}`);
+      textLine(`Objetivo: ${item.assessment.objective||student?.goal||'Nao informado'}`,10,true);
+      if(item.assessment.general_notes)textLine(`Observacoes gerais: ${item.assessment.general_notes}`,9,false,muted);
+
+      section('Antropometria');
+      textLine(`Peso: ${fmt(item.anth?.weight_kg)} kg   |   Altura: ${fmt(item.anth?.height_cm)} cm   |   IMC: ${fmt(item.anth?.bmi)}`);
+
+      section('Sinais vitais');
+      const pa=item.anth?.systolic_bp!=null&&item.anth?.diastolic_bp!=null?`${item.anth.systolic_bp}/${item.anth.diastolic_bp} mmHg`:'—';
+      textLine(`Pressao arterial: ${pa}   |   SpO2: ${item.anth?.spo2_percent!=null?fmt(item.anth.spo2_percent)+'%':'—'}   |   FC: ${item.anth?.heart_rate_bpm??item.anth?.resting_heart_rate??'—'}${item.anth?.heart_rate_bpm!=null||item.anth?.resting_heart_rate!=null?' bpm':''}`);
+      textLine(`Momento da leitura: ${vitalContextLabel(item.anth?.vital_context)}`,9,false,muted);
+      if(item.anth?.observations)textLine(`Observacoes: ${item.anth.observations}`,9,false,muted);
+
+      section('Composicao corporal');
+      const fat=item.comp?.body_fat_percentage??item.fold?.body_fat_percentage??item.navy?.body_fat_percentage;
+      textLine(`Gordura corporal: ${fat!=null?fmt(fat)+'%':'—'}   |   Massa gorda: ${item.comp?.fat_mass_kg!=null?fmt(item.comp.fat_mass_kg)+' kg':'—'}   |   Massa magra: ${item.comp?.lean_mass_kg!=null?fmt(item.comp.lean_mass_kg)+' kg':'—'}`);
+      if(item.fold)textLine(`7 dobras: soma ${fmt(item.fold.sum_7_mm)} mm   |   Protocolo: ${item.fold.protocol||'Jackson & Pollock 7'}`,9,false,muted);
+      if(item.navy?.body_fat_percentage!=null)textLine(`Metodo da Marinha: ${fmt(item.navy.body_fat_percentage)}% de gordura corporal`,9,false,muted);
+
+      if(item.circs.length){
+        section('Circunferencias');
+        for(const r of item.circs)textLine(`${r.site}: ${fmt(r.value_cm)} cm${r.side&&r.side!=='central'?' • '+r.side:''}`,9,false,white,8);
+      }
+
+      if(item.strength.length){
+        section('Forca e assimetria');
+        for(const r of item.strength)textLine(`${r.test_name} • ${r.side}: melhor ${fmt(r.best_result)} ${r.unit||'kgf'} • media ${fmt(r.average_result)}`,9,false,white,8);
+      }
+    }
+    return {blob:new Blob([await pdf.save()],{type:'application/pdf'}),student};
+  }
+
+  async function downloadEvolutionPdf(){
+    try{
+      q('#vitalsStatus')&&(q('#vitalsStatus').textContent='Gerando relatório completo...');
+      const {blob,student}=await buildEvolutionPdfBlob();
+      downloadBlobFile(blob,reportFileName(student));
+      q('#vitalsStatus')&&(q('#vitalsStatus').textContent='✓ PDF de evolução gerado.');
+      cloudToast('Relatório de evolução baixado.');
+    }catch(error){cloudToast(`Não foi possível gerar o PDF: ${error.message}`);}
+  }
+
+  async function shareEvolutionPdf(){
+    try{
+      q('#vitalsStatus')&&(q('#vitalsStatus').textContent='Preparando PDF para compartilhar...');
+      const {blob,student}=await buildEvolutionPdfBlob(),name=reportFileName(student);
+      const file=new File([blob],name,{type:'application/pdf'});
+      if(navigator.share && navigator.canShare?.({files:[file]})){
+        await navigator.share({title:'Body Lab • Relatório de evolução',text:`Relatório de evolução de ${student?.full_name||'aluno'}.`,files:[file]});
+        q('#vitalsStatus')&&(q('#vitalsStatus').textContent='✓ Relatório compartilhado.');
+      }else{
+        downloadBlobFile(blob,name);
+        q('#vitalsStatus')&&(q('#vitalsStatus').textContent='O navegador não permite compartilhar arquivo diretamente. O PDF foi baixado para você enviar.');
+        cloudToast('PDF baixado. Envie pelo WhatsApp ou canal desejado.');
+      }
+    }catch(error){
+      if(error?.name!=='AbortError')cloudToast(`Não foi possível compartilhar o PDF: ${error.message}`);
+    }
+  }
+
   async function loadHistory(studentId=state.selectedStudentId) {
     const host=q('#historyList');if(!host)return;
     if(!studentId){host.className='cloudEmpty';host.textContent='Selecione um aluno para visualizar o histórico.';return;}
@@ -602,7 +875,7 @@
       const ids=assessments.map(a=>a.id);
       // Quantidades por avaliação; as consultas são pequenas e deixam o resumo fácil de entender.
       const [anth,folds,navy,photos,strength]=await Promise.all([
-        rest('anthropometry',{query:`select=assessment_id,weight_kg,height_cm,bmi&assessment_id=in.(${ids.join(',')})`}),
+        rest('anthropometry',{query:`select=assessment_id,weight_kg,height_cm,bmi,systolic_bp,diastolic_bp,spo2_percent,heart_rate_bpm,resting_heart_rate&assessment_id=in.(${ids.join(',')})`}),
         rest('skinfolds_7',{query:`select=assessment_id,body_fat_percentage,sum_7_mm&assessment_id=in.(${ids.join(',')})`}),
         rest('navy_method',{query:`select=assessment_id,body_fat_percentage&assessment_id=in.(${ids.join(',')})`}),
         rest('assessment_photos',{query:`select=assessment_id,id&assessment_id=in.(${ids.join(',')})`}),
@@ -612,8 +885,10 @@
       host.innerHTML=assessments.map(a=>{
         const ant=by(anth,a.id)[0],fold=by(folds,a.id)[0],nav=by(navy,a.id)[0],photoCount=by(photos,a.id).length,strengthCount=by(strength,a.id).length;
         const fat=fold?.body_fat_percentage??nav?.body_fat_percentage;
-        const details=[ant?.weight_kg!=null?`${ant.weight_kg} kg`:null,fat!=null?`${Number(fat).toFixed(1)}% gordura`:null,photoCount?`${photoCount} fotos`:null,strengthCount?`${strengthCount} testes de força`:null].filter(Boolean).join(' • ')||'Avaliação registrada';
-        return `<div class="historyItem"><div><b>${new Date(a.assessment_date+'T12:00:00').toLocaleDateString('pt-BR')}</b><div class="muted">${esc(a.status)}</div></div><div>${esc(details)}<div class="muted">${esc(a.objective||'')}</div></div><div class="cloudActions"><button class="smallBtn" data-open-strength="${a.id}" data-date="${a.assessment_date}">FORÇA</button></div></div>`;
+        const bp=ant?.systolic_bp!=null&&ant?.diastolic_bp!=null?`${ant.systolic_bp}/${ant.diastolic_bp} mmHg`:null;
+        const spo2=ant?.spo2_percent!=null?`SpO₂ ${Number(ant.spo2_percent).toLocaleString('pt-BR',{maximumFractionDigits:1})}%`:null;
+        const details=[ant?.weight_kg!=null?`${ant.weight_kg} kg`:null,fat!=null?`${Number(fat).toFixed(1)}% gordura`:null,bp,spo2,photoCount?`${photoCount} fotos`:null,strengthCount?`${strengthCount} testes de força`:null].filter(Boolean).join(' • ')||'Avaliação registrada';
+        return `<div class="historyItem"><div><b>${new Date(a.assessment_date+'T12:00:00').toLocaleDateString('pt-BR')}</b><div class="muted">${esc(a.status)}</div></div><div>${esc(details)}<div class="muted">${esc(a.objective||'')}</div></div><div class="cloudActions"><button class="smallBtn" data-open-vitals="${a.id}" data-date="${a.assessment_date}">SINAIS</button><button class="smallBtn" data-open-strength="${a.id}" data-date="${a.assessment_date}">FORÇA</button></div></div>`;
       }).join('');
     }catch(error){host.className='cloudEmpty';host.textContent=`Erro ao carregar histórico: ${error.message}`;}
   }
@@ -639,6 +914,13 @@
     q('#refreshHistoryBtn').onclick=()=>loadHistory(q('#historyStudentSelect').value);
     q('#historyStudentSelect').onchange=e=>loadHistory(e.target.value);
     q('#strengthStudentSelect').onchange=e=>{state.selectedStudentId=e.target.value;localStorage.setItem('bodylab_selected_student',e.target.value);syncSelectedStudent();};
+    q('#vitalsStudentSelect').onchange=e=>{state.selectedStudentId=e.target.value;localStorage.setItem('bodylab_selected_student',e.target.value);syncSelectedStudent();loadVitalsHistory(e.target.value);};
+    q('#saveVitalsBtn').onclick=saveVitals;
+    q('#loadVitalsBtn').onclick=loadVitalsForDate;
+    q('#downloadEvolutionVitalsBtn').onclick=downloadEvolutionPdf;
+    q('#shareEvolutionVitalsBtn').onclick=shareEvolutionPdf;
+    q('#downloadEvolutionHistoryBtn').onclick=downloadEvolutionPdf;
+    q('#shareEvolutionHistoryBtn').onclick=shareEvolutionPdf;
     q('#saveStrengthBtn').onclick=saveStrength;
     q('#loadStrengthBtn').onclick=loadStrengthForDate;
     q('#saveMetricCloudBtn').onclick=saveMetricAssessment;
@@ -648,6 +930,8 @@
       if(select){state.selectedStudentId=select.dataset.selectStudent;localStorage.setItem('bodylab_selected_student',state.selectedStudentId);syncSelectedStudent();cloudToast('Aluno selecionado.');}
       const hist=e.target.closest('[data-history-student]');
       if(hist){state.selectedStudentId=hist.dataset.historyStudent;localStorage.setItem('bodylab_selected_student',state.selectedStudentId);renderStudentOptions();syncSelectedStudent();window.go('historico');loadHistory(state.selectedStudentId);}
+      const vital=e.target.closest('[data-open-vitals]');
+      if(vital){q('#vitalsDate').value=vital.dataset.date;window.go('sinais');loadVitalsForDate();loadVitalsHistory(state.selectedStudentId);}
       const force=e.target.closest('[data-open-strength]');
       if(force){q('#strengthDate').value=force.dataset.date;window.go('forca');loadStrengthForDate();}
     });
@@ -658,12 +942,14 @@
     document.body.classList.remove('authLocked');
     await Promise.all([loadProfessional(),loadStudents(),loadStrengthCatalog()]);
     await loadDashboard();
-    if(state.selectedStudentId)await loadHistory(state.selectedStudentId);
+    if(state.selectedStudentId){await loadHistory(state.selectedStudentId);await loadVitalsHistory(state.selectedStudentId);}
   }
 
   async function init() {
     addStyles();buildAuth();addNavigationAndScreens();wireEvents();
     q('#strengthDate').value=isoToday();
+    q('#vitalsDate').value=isoToday();
+    q('#vitalsTime').value=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',hour12:false});
     try{
       const config=await loadConfig();
       if(!config.supabaseConfigured){

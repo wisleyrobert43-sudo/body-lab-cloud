@@ -1,0 +1,45 @@
+BODY LAB CLOUD - AVALIACAO FISICA, HISTORICO E RELATORIOS
+VERSAO: bodylab-cloud-20261003-2
+
+O QUE ENTROU NESTA VERSAO
+- Login e cadastro de profissionais usando Supabase Auth.
+- Banco de alunos por profissional, protegido pelas regras RLS criadas no Supabase.
+- Selecao de aluno e historico de avaliacoes por data.
+- Salvamento da avaliacao por medidas no banco: antropometria, 7 dobras, Marinha e circunferencias.
+- Upload das fotos para o bucket privado body-lab-private.
+- Novo modulo Forca e Assimetria / Dinamometria com 3 tentativas, melhor resultado e media calculados pelo banco.
+- Grafico visual direita x esquerda, percentual de assimetria e testes bilaterais.
+- Dashboard com contagem real de alunos e avaliacoes.
+- Future Body e analise visual por IA continuam funcionando pela OpenRouter.
+
+CONFIGURACAO DO SUPABASE
+1. O projeto ja usa esta URL:
+   https://vpejayaeznydqztulmgh.supabase.co
+2. A PUBLISHABLE KEY publica deste projeto ja foi conectada nesta versao.
+3. SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY continuam aceitando override pelo arquivo .env, caso o projeto seja migrado no futuro.
+4. NUNCA coloque a service_role/secret key no navegador. A integracao web usa somente a chave publica e o login do usuario.
+
+ATUALIZACAO SEM PERDER A CHAVE OPENROUTER
+- Feche o Body Lab aberto (Ctrl+C na janela preta).
+- Extraia este ZIP por cima da pasta atual, substituindo os arquivos.
+- Preserve o seu .env antigo. Este ZIP nao inclui .env de proposito.
+- Nao e mais necessario acrescentar a chave publica do Supabase ao .env nesta versao.
+- Preserve apenas sua OPENROUTER_API_KEY no .env e abra INICIAR.bat.
+
+FLUXO NOVO
+1. Entre com o email e senha cadastrados no Supabase.
+2. Abra ALUNOS e cadastre/selecione um aluno.
+3. Composicao corporal: calcule e clique SALVAR NO HISTORICO.
+4. Nova avaliacao visual: envie os 2 periodos e clique SALVAR FOTOS NO HISTORICO para armazenar as imagens privadas.
+5. Forca e Assimetria: escolha o aluno, data, preencha as tentativas e salve. O banco calcula os resultados.
+6. Historico: consulte as datas anteriores do aluno.
+
+OBSERVACOES IMPORTANTES
+- As senhas nao sao gravadas pelo Body Lab. O Supabase Auth cuida da autenticacao e armazena as senhas de forma segura.
+- O navegador guarda apenas a sessao de login (token), nunca a senha digitada.
+- Fotos e PDFs devem ser tratados como dados privados. O bucket criado no Supabase e privado e usa a pasta do usuario autenticado.
+- Nao publique o arquivo .env e nao use a service_role key no front-end.
+- O percentual de gordura e uma estimativa; a analise por foto nao diagnostica alteracoes clinicas.
+
+IA / OPENROUTER
+A analise corporal usa google/gemini-2.5-flash pela OpenRouter. O Future Body usa google/gemini-3.1-flash-image. Preserve sua OPENROUTER_API_KEY no .env.
